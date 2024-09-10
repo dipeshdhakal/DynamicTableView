@@ -17,56 +17,59 @@ public struct DynamicTableView: View {
 
     public var body: some View {
         VStack {
-            ScrollView([.vertical,.horizontal]) {
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(0..<viewModel.tableData.count, id: \.self) { rowIndex in
-                        HStack(spacing: 0) {
-                            ForEach(0..<viewModel.tableData[rowIndex].count, id: \.self) { columnIndex in
-                                if viewModel.config.isEditable {
-                                    TextField("", text: $viewModel.tableData[rowIndex][columnIndex])
-                                        .font(columnIndex == 0 || rowIndex == 0 ? .headline : .body)
-                                        .frame(width: 80, height: 40)
-                                        .border(Color.gray)
-                                        .multilineTextAlignment(.center)
-                                        .background(viewModel.isHeading(rowIndex, columnIndex) ? Color.accentColor.opacity(0.3) : Color.clear)
-                                        .onTapGesture {
-                                            viewModel.handleSelection(row: rowIndex, column: columnIndex)
-                                        }
-                                        .apply {
-                                            #if os(iOS)
-                                                $0.keyboardType(viewModel.config.keyboardType.uiKeyboardType)
-                                            #endif
-                                        }
-                                } else {
-                                    Text(viewModel.tableData[rowIndex][columnIndex])
-                                        .frame(width: 80, height: 40)
-                                        .font(columnIndex == 0 || rowIndex == 0 ? .headline : .body)
-                                        .border(Color.gray)
-                                        .multilineTextAlignment(.center)
+            ScrollView(.vertical) {
+                ScrollView(.horizontal) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(0..<viewModel.tableData.count, id: \.self) { rowIndex in
+                            HStack(alignment: .top, spacing: 0) {
+                                ForEach(0..<viewModel.tableData[rowIndex].count, id: \.self) { columnIndex in
+                                    if viewModel.config.isEditable {
+                                        TextField("", text: $viewModel.tableData[rowIndex][columnIndex])
+                                            .font(columnIndex == 0 || rowIndex == 0 ? .headline : .body)
+                                            .frame(width: 80, height: 40)
+                                            .border(Color.gray)
+                                            .multilineTextAlignment(.center)
+                                            .background(viewModel.isHeading(rowIndex, columnIndex) ? Color.accentColor.opacity(0.3) : Color.clear)
+                                            .onTapGesture {
+                                                viewModel.handleSelection(row: rowIndex, column: columnIndex)
+                                            }
+                                            .apply {
+                                                #if os(iOS)
+                                                    $0.keyboardType(viewModel.config.keyboardType.uiKeyboardType)
+                                                #endif
+                                            }
+                                    } else {
+                                        Text(viewModel.tableData[rowIndex][columnIndex])
+                                            .frame(width: 80, height: 40)
+                                            .font(columnIndex == 0 || rowIndex == 0 ? .headline : .body)
+                                            .border(Color.gray)
+                                            .multilineTextAlignment(.center)
+                                    }
                                 }
-                            }
-                            if rowIndex == 0, viewModel.config.isEditable {
-                                Button {
-                                    viewModel.addColumn()
-                                } label: {
-                                    Image(systemName: "plus.app")
-                                        .font(.title)
-                                        .padding(.horizontal, 10)
+                                if rowIndex == 0, viewModel.config.isEditable {
+                                    Button {
+                                        viewModel.addColumn()
+                                    } label: {
+                                        Image(systemName: "plus.app")
+                                            .font(.title)
+                                            .padding(.horizontal, 10)
+                                    }
                                 }
                             }
                         }
-                    }
-                    if viewModel.config.isEditable {
-                        Button {
-                            viewModel.addRow()
-                        } label: {
-                            Image(systemName: "plus.app")
-                                .font(.title)
-                                .padding(.vertical, 10)
+                        if viewModel.config.isEditable {
+                            Button {
+                                viewModel.addRow()
+                            } label: {
+                                Image(systemName: "plus.app")
+                                    .font(.title)
+                                    .padding(.vertical, 10)
+                            }
                         }
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             Spacer()
             if viewModel.config.isEditable {
@@ -140,6 +143,6 @@ extension View {
 #Preview {
     VStack {
         DynamicTableView(viewModel: DynamicTableViewModel(numberOfRows: 4, numberOfColumns: 4, config: DynamicTableConfig(isEditable: true, keyboardType: .decimalPad)))
-        DynamicTableView(viewModel: DynamicTableViewModel(tableData: [["R1", "R2", "R3"], ["C1", "2", "3"], ["C2", "5", "6"]], config: DynamicTableConfig(isEditable: false)))
+//        DynamicTableView(viewModel: DynamicTableViewModel(tableData: [["R1", "R2", "R3"], ["C1", "2", "3"], ["C2", "5", "6"]], config: DynamicTableConfig(isEditable: false)))
     }
 }

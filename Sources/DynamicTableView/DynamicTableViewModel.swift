@@ -114,7 +114,7 @@ public class DynamicTableViewModel: ObservableObject {
     }
 
     func deleteSelectedRow() {
-        if let row = selectedRow, row > 0 {
+        if let row = selectedRow, row > 0, row < tableData.count {
             tableData.remove(at: row)
             selectedRow = nil
             onDynamicTableUpdated?.onRowDeleted(row: row)
@@ -122,7 +122,7 @@ public class DynamicTableViewModel: ObservableObject {
     }
 
     func deleteSelectedColumn() {
-        if let column = selectedColumn, column > 0 {
+        if let column = selectedColumn, column > 0, column < tableData[0].count {
             for i in 0..<tableData.count {
                 tableData[i].remove(at: column)
             }
@@ -132,14 +132,14 @@ public class DynamicTableViewModel: ObservableObject {
     }
 
     func moveRow(from source: Int, to destination: Int) {
-        guard source > 0, destination > 0 else { return }
+        guard source > 0, destination > 0, source < tableData.count, destination < tableData.count else { return }
         let movedRow = tableData.remove(at: source)
         tableData.insert(movedRow, at: destination)
         onDynamicTableUpdated?.onRowMoved(from: source, to: destination)
     }
 
     func moveColumn(from source: Int, to destination: Int) {
-        guard source > 0, destination > 0 else { return }
+        guard source > 0, destination > 0, source < tableData[0].count, destination < tableData[0].count else { return }
         for i in 0..<tableData.count {
             let movedValue = tableData[i].remove(at: source)
             tableData[i].insert(movedValue, at: destination)
@@ -157,15 +157,15 @@ public class DynamicTableViewModel: ObservableObject {
     }
 
     func handleSelection(row: Int, column: Int) {
-        if row == 0 && column > 0 {
+        if row == 0 && column > 0 && column < tableData[0].count {
             selectedColumn = column
             selectedRow = nil
             onDynamicTableUpdated?.onColumnSelected(column: column)
-        } else if column == 0 && row > 0 {
+        } else if column == 0 && row > 0 && row < tableData.count {
             selectedRow = row
             selectedColumn = nil
             onDynamicTableUpdated?.onRowSelected(row: row)
-        } else {
+        } else if row < tableData.count, column < tableData[0].count {
             selectedRow = nil
             selectedColumn = nil
             onDynamicTableUpdated?.onCellSelected(row: row, column: column)
